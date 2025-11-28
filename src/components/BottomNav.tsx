@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 interface BottomNavProps {
-  activeTab: "home" | "my";
-  onTabPress: (tab: "home" | "my") => void;
+  activeTab: "home" | "scan" | "my";
+  onTabPress: (tab: "home" | "scan" | "my") => void;
 }
 
 export default function BottomNav({ activeTab, onTabPress }: BottomNavProps) {
@@ -23,6 +23,23 @@ export default function BottomNav({ activeTab, onTabPress }: BottomNavProps) {
             ]}
           >
             홈
+          </Text>
+        </TouchableOpacity>
+
+        {/* 등록하기 */}
+        <TouchableOpacity
+          onPress={() => onTabPress("scan")}
+          activeOpacity={0.7}
+          style={styles.navItem}
+        >
+          <Text style={styles.navIcon}>📸</Text>
+          <Text
+            style={[
+              styles.navLabel,
+              activeTab === "scan" && styles.navLabelActive,
+            ]}
+          >
+            등록하기
           </Text>
         </TouchableOpacity>
 
