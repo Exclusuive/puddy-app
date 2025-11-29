@@ -158,18 +158,6 @@ export default function HomeScreen({
             />
           </View>
         </View>
-
-        {/* 긴급 연락처 등록 버튼 */}
-        <View style={styles.emergencyContactContainer}>
-          <TouchableOpacity
-            style={styles.emergencyContactButton}
-            onPress={() => setShowEmergencyContact(true)}
-            activeOpacity={0.7}
-          >
-            <Phone size={24} color="#FFFFFF" style={styles.emergencyContactIcon} />
-            <Text style={styles.emergencyContactText}>긴급 연락처 등록하기</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
 
       {/* 예방접종 모달 */}

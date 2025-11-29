@@ -8,6 +8,8 @@ import LoginScreen from "./src/screens/LoginScreen";
 import PetDetailScreen from "./src/screens/PetDetailScreen";
 import MissingReportScreen from "./src/screens/MissingReportScreen";
 import ScanScreen from "./src/screens/ScanScreen";
+import IdentityVerificationScreen from "./src/screens/IdentityVerificationScreen";
+import PetRegistrationScreen from "./src/screens/PetRegistrationScreen";
 import BottomNav from "./src/components/BottomNav";
 import { useAuthStore } from "./src/store/authStore";
 
@@ -27,6 +29,9 @@ export default function App() {
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [showMissingReport, setShowMissingReport] = useState(false);
   const [showScanScreen, setShowScanScreen] = useState(false);
+  const [showIdentityVerification, setShowIdentityVerification] =
+    useState(false);
+  const [showPetRegistration, setShowPetRegistration] = useState(false);
   const [scanScreenTitle, setScanScreenTitle] = useState("코 사진 촬영");
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
 
@@ -67,8 +72,15 @@ export default function App() {
             onPetPress={setSelectedPet}
             onMissingReportPress={() => setShowMissingReport(true)}
             onScanPress={(title) => {
-              setScanScreenTitle(title);
-              setShowScanScreen(true);
+              if (title === "강아지 등록") {
+                setShowPetRegistration(true);
+              } else if (title === "신원 인증" || title === "유기견 발견") {
+                setShowIdentityVerification(true);
+                setScanScreenTitle(title);
+              } else {
+                setScanScreenTitle(title);
+                setShowScanScreen(true);
+              }
             }}
           />
         );
@@ -80,8 +92,15 @@ export default function App() {
             onPetPress={setSelectedPet}
             onMissingReportPress={() => setShowMissingReport(true)}
             onScanPress={(title) => {
-              setScanScreenTitle(title);
-              setShowScanScreen(true);
+              if (title === "강아지 등록") {
+                setShowPetRegistration(true);
+              } else if (title === "신원 인증" || title === "유기견 발견") {
+                setShowIdentityVerification(true);
+                setScanScreenTitle(title);
+              } else {
+                setScanScreenTitle(title);
+                setShowScanScreen(true);
+              }
             }}
           />
         );
@@ -153,6 +172,31 @@ export default function App() {
         <ScanScreen
           title={scanScreenTitle}
           onClose={() => setShowScanScreen(false)}
+        />
+      </Modal>
+      <Modal
+        visible={showIdentityVerification}
+        animationType="slide"
+        presentationStyle="fullScreen"
+        onRequestClose={() => setShowIdentityVerification(false)}
+      >
+        <IdentityVerificationScreen
+          mode={scanScreenTitle === "유기견 발견" ? "found" : "identity"}
+          onClose={() => setShowIdentityVerification(false)}
+        />
+      </Modal>
+      <Modal
+        visible={showPetRegistration}
+        animationType="slide"
+        presentationStyle="fullScreen"
+        onRequestClose={() => setShowPetRegistration(false)}
+      >
+        <PetRegistrationScreen
+          onClose={() => setShowPetRegistration(false)}
+          onSuccess={() => {
+            // 등록 성공 시 처리 (예: 홈 화면 새로고침 등)
+            setShowPetRegistration(false);
+          }}
         />
       </Modal>
       <StatusBar style="dark" />

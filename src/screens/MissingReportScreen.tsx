@@ -157,7 +157,7 @@ export default function MissingReportScreen({
         {/* 선택된 반려견 정보 - PetCard로 표시 */}
         {selectedPet && (
           <View style={styles.petCardContainer}>
-            <PetCard pets={[selectedPet]} />
+            <PetCard pets={[selectedPet]} showRegisterCard={false} />
           </View>
         )}
 

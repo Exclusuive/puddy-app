@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "puddy",
+    "slug": "puddy",
+    "scheme": "puddy",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "scheme": "puddy",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",

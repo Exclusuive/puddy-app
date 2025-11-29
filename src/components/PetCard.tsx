@@ -29,12 +29,14 @@ interface PetCardProps {
   pets: Pet[];
   onCardPress?: (pet: Pet) => void;
   onRegisterPress?: () => void;
+  showRegisterCard?: boolean;
 }
 
 export default function PetCard({
   pets,
   onCardPress,
   onRegisterPress,
+  showRegisterCard = true,
 }: PetCardProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -44,7 +46,7 @@ export default function PetCard({
     setCurrentIndex(index);
   };
 
-  const totalCards = pets.length + 1; // 등록하기 카드 포함
+  const totalCards = pets.length + (showRegisterCard ? 1 : 0); // 등록하기 카드 포함 여부
 
   // 생년월일에서 나이 계산 함수
   const calculateAge = (birthDate: string): string => {
@@ -161,25 +163,27 @@ export default function PetCard({
         ))}
 
         {/* 등록하기 카드 */}
-        <TouchableOpacity
-          onPress={() => onRegisterPress?.()}
-          activeOpacity={0.9}
-          style={[styles.cardWrapper, { width: CARD_WIDTH }]}
-        >
-          <View style={styles.card}>
-            <View style={styles.registerCardBody}>
-              <View style={styles.registerContent}>
-                <View style={styles.registerIconWrapper}>
-                  <Plus size={48} color="#FF9D4D" />
+        {showRegisterCard && (
+          <TouchableOpacity
+            onPress={() => onRegisterPress?.()}
+            activeOpacity={0.9}
+            style={[styles.cardWrapper, { width: CARD_WIDTH }]}
+          >
+            <View style={styles.card}>
+              <View style={styles.registerCardBody}>
+                <View style={styles.registerContent}>
+                  <View style={styles.registerIconWrapper}>
+                    <Plus size={48} color="#FF9D4D" />
+                  </View>
+                  <Text style={styles.registerText}>강아지 등록하기</Text>
+                  <Text style={styles.registerSubtext}>
+                    새로운 반려견을 등록해주세요
+                  </Text>
                 </View>
-                <Text style={styles.registerText}>강아지 등록하기</Text>
-                <Text style={styles.registerSubtext}>
-                  새로운 반려견을 등록해주세요
-                </Text>
               </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        )}
       </ScrollView>
 
       {/* 캐러셀 인디케이터 */}
@@ -229,6 +233,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 6,
+    marginHorizontal: 4,
   },
   headerText: {
     color: "#111111",
@@ -256,6 +261,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingHorizontal: 16,
     paddingVertical: 12,
+
     alignItems: "flex-start",
     backgroundColor: "#F9FDFE",
     minHeight: 160,
