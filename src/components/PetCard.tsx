@@ -88,6 +88,11 @@ export default function PetCard({
             style={[styles.cardWrapper, { width: CARD_WIDTH }]}
           >
             <View style={styles.card}>
+              {/* 비문 ID - 카드 전체 맨 위 */}
+              <View style={styles.registrationNumberHeader}>
+                <Text style={styles.registrationNumber}>{pet.id}</Text>
+              </View>
+
               <View style={styles.cardBody}>
                 {/* 왼쪽: 프로필 이미지 */}
                 <View style={styles.profileContainer}>
@@ -116,13 +121,10 @@ export default function PetCard({
 
                 {/* 오른쪽: 반려견 정보 */}
                 <View style={styles.infoContainer}>
-                  {/* 제목 */}
-                  <Text style={styles.headerText}>강아지 비문 신분증</Text>
-
-                  {/* 등록 번호 */}
-                  <View style={styles.infoRow}>
-                    <Text style={styles.infoLabel}>등록번호</Text>
-                    <Text style={styles.infoValue}>{pet.id}</Text>
+                  {/* 동물등록번호 */}
+                  <View style={[styles.infoRow, styles.firstInfoRow]}>
+                    <Text style={styles.infoLabel}>동물등록번호</Text>
+                    <Text style={styles.infoValue}>159229529</Text>
                   </View>
 
                   <View style={styles.divider} />
@@ -232,23 +234,37 @@ const styles = StyleSheet.create({
     color: "#111111",
     fontSize: 14,
     fontWeight: "700",
-    marginBottom: 12,
+
+    textAlign: "center",
+    letterSpacing: 0.5,
+  },
+  registrationNumberHeader: {
+    backgroundColor: "#F9FDFE",
+    paddingTop: 12,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  registrationNumber: {
+    color: "#111111",
+    fontSize: 18,
+    fontWeight: "900",
     textAlign: "center",
     letterSpacing: 0.5,
   },
   cardBody: {
     flexDirection: "row",
     paddingHorizontal: 16,
-    paddingVertical: 16,
-    alignItems: "center",
+    paddingVertical: 12,
+    alignItems: "flex-start",
     backgroundColor: "#F9FDFE",
     minHeight: 160,
-    height: 200,
+    height: 180,
   },
   profileContainer: {
     marginRight: 20,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   statusContainer: {
     marginTop: 8,
@@ -291,13 +307,16 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flex: 1,
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 6,
     flexWrap: "wrap",
+  },
+  firstInfoRow: {
+    paddingTop: 8,
   },
   infoLabel: {
     color: "#505050",
@@ -362,7 +381,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#F9FDFE",
     minHeight: 160,
-    height: 200,
+    height: 215,
   },
   registerContent: {
     alignItems: "center",

@@ -2,8 +2,7 @@
 
 ## 데이터베이스 스키마 설계
 
-```mermaid
-erDiagram
+```mermaiderDiagram
     Users ||--o{ Pets : "소유"
     Users ||--o{ EmergencyContacts : "등록"
     Pets ||--o{ NosePrints : "등록"
@@ -28,7 +27,8 @@ erDiagram
     Pets {
         uuid id PK
         uuid user_id FK
-        string pet_id UK "000-000-0000000 형식"
+        string pet_id UK "000-000-0000000 형식 (앱 내부 고유 ID)"
+        string government_registration_number "정부 발급 동물등록번호 (15자리, 선택적)"
         string name
         date birth_date
         enum gender "수컷, 암컷"
@@ -101,16 +101,6 @@ erDiagram
         timestamp updated_at
     }
 
-    Photos {
-        uuid id PK
-        uuid pet_id FK
-        uuid health_record_id FK "건강 기록과 연결 (선택적)"
-        string image_url
-        text caption "설명"
-        date photo_date "촬영일"
-        timestamp created_at
-    }
-
     EmergencyContacts {
         uuid id PK
         uuid user_id FK
@@ -147,7 +137,8 @@ erDiagram
 ### Pets (반려견)
 
 - 사용자가 등록한 반려견 정보
-- 고유 ID는 000-000-0000000 형식
+- 고유 ID는 000-000-0000000 형식 (앱 내부 고유 ID)
+- 정부 발급 동물등록번호 (15자리, 선택적 입력)
 - 코 사진 인증 여부 및 상태 관리
 
 ### NosePrints (코 사진)
@@ -197,6 +188,7 @@ CREATE INDEX idx_users_email ON Users(email);
 -- Pets 테이블
 CREATE INDEX idx_pets_user_id ON Pets(user_id);
 CREATE INDEX idx_pets_pet_id ON Pets(pet_id);
+CREATE INDEX idx_pets_government_registration_number ON Pets(government_registration_number);
 CREATE INDEX idx_pets_status ON Pets(status);
 
 -- NosePrints 테이블

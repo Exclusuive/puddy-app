@@ -6,32 +6,120 @@ import {
   SafeAreaView,
   Image,
   ActivityIndicator,
+  Platform,
+  Alert,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
 import { useAuthStore } from "../store/authStore";
+import { supabase } from "../utils/supabase";
+
+// WebBrowser 인증 완료 후 리다이렉트 처리
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const login = useAuthStore((state) => state.login);
 
+  // 구글 OAuth 설정
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+  });
+
+  // 구글 로그인 응답 처리
+  useEffect(() => {
+    if (response?.type === "success") {
+      handleGoogleSignIn(response.authentication);
+    } else if (response?.type === "error") {
+      console.error("구글 로그인 오류:", response.error);
+      Alert.alert(
+        "로그인 실패",
+        "구글 로그인에 실패했습니다. 다시 시도해주세요."
+      );
+      setIsLoading(false);
+    }
+  }, [response]);
+
+  const handleGoogleSignIn = async (authentication: any) => {
+    if (!authentication?.accessToken) {
+      Alert.alert("오류", "인증 토큰을 받지 못했습니다.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      // Supabase에 구글 인증 토큰으로 로그인
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: "google",
+        token: authentication.accessToken,
+      });
+
+      if (error) {
+        console.error("Supabase 로그인 오류:", error);
+        Alert.alert("로그인 실패", error.message);
+        setIsLoading(false);
+        return;
+      }
+
+      if (data?.user) {
+        const user = data.user;
+        const userMetadata = user.user_metadata || {};
+
+        // 사용자 정보를 authStore에 저장
+        await login({
+          id: user.id,
+          email: user.email || "",
+          name: userMetadata.full_name || userMetadata.name || "사용자",
+          photo: userMetadata.avatar_url || userMetadata.picture,
+        });
+
+        // Supabase Users 테이블에 사용자 정보 저장/업데이트
+        try {
+          const { error: upsertError } = await supabase.from("Users").upsert(
+            {
+              id: user.id,
+              email: user.email,
+              name: userMetadata.full_name || userMetadata.name || "사용자",
+              google_id: userMetadata.sub || user.id,
+              photo_url: userMetadata.avatar_url || userMetadata.picture,
+              last_login_at: new Date().toISOString(),
+            },
+            {
+              onConflict: "id",
+            }
+          );
+
+          if (upsertError) {
+            console.error("사용자 정보 저장 실패:", upsertError);
+          }
+        } catch (error) {
+          console.error("사용자 정보 저장 중 오류:", error);
+        }
+      }
+    } catch (error) {
+      console.error("로그인 처리 실패:", error);
+      Alert.alert("오류", "로그인 처리 중 오류가 발생했습니다.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGoogleLogin = async () => {
+    if (!request) {
+      Alert.alert("오류", "구글 로그인 설정이 완료되지 않았습니다.");
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // TODO: 실제 구글 로그인 연동
-      // 지금은 시뮬레이션으로 더미 사용자 데이터로 로그인
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // 로딩 시뮬레이션
-
-      const dummyUser = {
-        id: "google_user_123",
-        email: "user@example.com",
-        name: "사용자",
-        photo: undefined,
-      };
-
-      await login(dummyUser);
+      await promptAsync();
     } catch (error) {
-      console.error("로그인 실패:", error);
-    } finally {
+      console.error("구글 로그인 시작 실패:", error);
+      Alert.alert("오류", "구글 로그인을 시작할 수 없습니다.");
       setIsLoading(false);
     }
   };
@@ -57,15 +145,25 @@ export default function LoginScreen() {
           <TouchableOpacity
             style={[styles.googleButton, isLoading && styles.buttonDisabled]}
             onPress={handleGoogleLogin}
-            disabled={isLoading}
+            disabled={isLoading || !request}
             activeOpacity={0.8}
           >
             {isLoading ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
               <>
-                <Text style={styles.googleIcon}>🔵</Text>
-                <Text style={styles.googleButtonText}>구글로 로그인</Text>
+                <View style={styles.googleIconContainer}>
+                  <Image
+                    source={{
+                      uri: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg",
+                    }}
+                    style={styles.googleIconImage}
+                    onError={() => {
+                      // 이미지 로드 실패 시 무시 (텍스트만 표시)
+                    }}
+                  />
+                </View>
+                <Text style={styles.googleButtonText}>Google로 계속하기</Text>
               </>
             )}
           </TouchableOpacity>
@@ -136,9 +234,16 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.7,
   },
-  googleIcon: {
-    fontSize: 20,
+  googleIconContainer: {
+    width: 20,
+    height: 20,
     marginRight: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  googleIconImage: {
+    width: 20,
+    height: 20,
   },
   googleButtonText: {
     color: "#FFFFFF",
@@ -152,4 +257,3 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 });
-

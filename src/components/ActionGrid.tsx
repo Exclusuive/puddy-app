@@ -1,9 +1,15 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Syringe, Hospital, FileText, AlertCircle } from "lucide-react-native";
+import {
+  Syringe,
+  Hospital,
+  FileText,
+  AlertCircle,
+  Phone,
+} from "lucide-react-native";
 
 interface ActionItem {
   id: string;
-  iconName: "vaccination" | "medical" | "insurance" | "missing";
+  iconName: "vaccination" | "medical" | "insurance" | "missing" | "emergency";
   label: string;
   onPress: () => void;
 }
@@ -17,6 +23,7 @@ const iconMap = {
   medical: Hospital,
   insurance: FileText,
   missing: AlertCircle,
+  emergency: Phone,
 };
 
 export default function ActionGrid({ actions }: ActionGridProps) {

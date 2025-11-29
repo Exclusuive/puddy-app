@@ -10,13 +10,14 @@ import {
   Modal,
 } from "react-native";
 import { useState } from "react";
-import { Bell, Pin, Camera, LifeBuoy } from "lucide-react-native";
+import { Bell, Phone } from "lucide-react-native";
 import PetCard from "../components/PetCard";
 import ActionGrid from "../components/ActionGrid";
 import InfoCard from "../components/InfoCard";
 import VaccinationScreen from "./VaccinationScreen";
 import MedicalRecordScreen from "./MedicalRecordScreen";
 import InsuranceScreen from "./InsuranceScreen";
+import EmergencyContactScreen from "./EmergencyContactScreen";
 
 interface Pet {
   id: string;
@@ -65,6 +66,7 @@ export default function HomeScreen({
   const [showVaccination, setShowVaccination] = useState(false);
   const [showMedicalRecord, setShowMedicalRecord] = useState(false);
   const [showInsurance, setShowInsurance] = useState(false);
+  const [showEmergencyContact, setShowEmergencyContact] = useState(false);
 
   const handlePetCardPress = (pet: Pet) => {
     onPetPress?.(pet);
@@ -156,6 +158,18 @@ export default function HomeScreen({
             />
           </View>
         </View>
+
+        {/* 긴급 연락처 등록 버튼 */}
+        <View style={styles.emergencyContactContainer}>
+          <TouchableOpacity
+            style={styles.emergencyContactButton}
+            onPress={() => setShowEmergencyContact(true)}
+            activeOpacity={0.7}
+          >
+            <Phone size={24} color="#FFFFFF" style={styles.emergencyContactIcon} />
+            <Text style={styles.emergencyContactText}>긴급 연락처 등록하기</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
       {/* 예방접종 모달 */}
@@ -186,6 +200,21 @@ export default function HomeScreen({
         onRequestClose={() => setShowInsurance(false)}
       >
         <InsuranceScreen onBack={() => setShowInsurance(false)} />
+      </Modal>
+
+      {/* 긴급 연락처 모달 */}
+      <Modal
+        visible={showEmergencyContact}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowEmergencyContact(false)}
+      >
+        <EmergencyContactScreen
+          onBack={() => setShowEmergencyContact(false)}
+          onSuccess={() => {
+            // 등록 성공 시 처리
+          }}
+        />
       </Modal>
     </SafeAreaView>
   );
@@ -233,6 +262,36 @@ const styles = StyleSheet.create({
   infoCardWrapper: {
     flex: 1,
     alignSelf: "stretch",
+  },
+  emergencyContactContainer: {
+    paddingHorizontal: 16,
+    marginTop: 12,
+    marginBottom: 10,
+  },
+  emergencyContactButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FF9D4D",
+    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  emergencyContactIcon: {
+    marginRight: 8,
+  },
+  emergencyContactText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#FFFFFF",
   },
   healthSection: {
     paddingHorizontal: 16,
