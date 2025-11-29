@@ -7,11 +7,18 @@ import {
   Image,
   SafeAreaView,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { useState, useRef } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { X } from "lucide-react-native";
 
-export default function ScanScreen() {
+interface ScanScreenProps {
+  title?: string;
+  onClose?: () => void;
+}
+
+export default function ScanScreen({ title = "코 사진 촬영", onClose }: ScanScreenProps) {
   const [permission, requestPermission] = useCameraPermissions();
   const [image, setImage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -96,6 +103,17 @@ export default function ScanScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* 헤더 */}
+      {onClose && (
+        <View style={styles.header}>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <X size={24} color="#1F2937" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>{title}</Text>
+          <View style={styles.placeholder} />
+        </View>
+      )}
+      
       <View
         style={[
           styles.cameraContainer,
@@ -205,22 +223,28 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
     backgroundColor: "#FFFFFF",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#E5E7EB",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  closeButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "600",
     color: "#1F2937",
-    marginBottom: 4,
   },
-  headerSubtitle: {
-    fontSize: 14,
-    color: "#6B7280",
+  placeholder: {
+    width: 40,
   },
   cameraContainer: {
     flex: 1,

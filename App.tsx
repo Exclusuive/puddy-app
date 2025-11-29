@@ -2,10 +2,12 @@ import { StatusBar } from "expo-status-bar";
 import { useState, useEffect } from "react";
 import { View, StyleSheet, ActivityIndicator, Modal } from "react-native";
 import HomeScreen from "./src/screens/HomeScreen";
-import ScanScreen from "./src/screens/ScanScreen";
+import HealthScreen from "./src/screens/HealthScreen";
 import MyPageScreen from "./src/screens/MyPageScreen";
 import LoginScreen from "./src/screens/LoginScreen";
 import PetDetailScreen from "./src/screens/PetDetailScreen";
+import MissingReportScreen from "./src/screens/MissingReportScreen";
+import ScanScreen from "./src/screens/ScanScreen";
 import BottomNav from "./src/components/BottomNav";
 import { useAuthStore } from "./src/store/authStore";
 
@@ -14,15 +16,41 @@ interface Pet {
   name: string;
   birthDate: string;
   gender: "수컷" | "암컷";
+  breed?: string;
   profileImage?: string;
   isNosePrintVerified: boolean;
   status: "등록 완료" | "실종 중";
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"home" | "scan" | "my">("home");
+  const [activeTab, setActiveTab] = useState<"health" | "home" | "my">("home");
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
+  const [showMissingReport, setShowMissingReport] = useState(false);
+  const [showScanScreen, setShowScanScreen] = useState(false);
+  const [scanScreenTitle, setScanScreenTitle] = useState("코 사진 촬영");
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+
+  // 샘플 반려견 데이터 (실제로는 HomeScreen에서 가져와야 함)
+  const [pets] = useState<Pet[]>([
+    {
+      id: "000-000-0000001",
+      name: "Coco",
+      birthDate: "2021.05.15",
+      gender: "암컷",
+      breed: "골든 리트리버",
+      isNosePrintVerified: true,
+      status: "등록 완료",
+    },
+    {
+      id: "000-000-0000002",
+      name: "Max",
+      birthDate: "2020.03.20",
+      gender: "수컷",
+      breed: "래브라도 리트리버",
+      isNosePrintVerified: true,
+      status: "등록 완료",
+    },
+  ]);
 
   useEffect(() => {
     // 앱 시작 시 자동 로그인 확인
@@ -31,14 +59,32 @@ export default function App() {
 
   const renderScreen = () => {
     switch (activeTab) {
+      case "health":
+        return <HealthScreen />;
       case "home":
-        return <HomeScreen onPetPress={setSelectedPet} />;
-      case "scan":
-        return <ScanScreen />;
+        return (
+          <HomeScreen
+            onPetPress={setSelectedPet}
+            onMissingReportPress={() => setShowMissingReport(true)}
+            onScanPress={(title) => {
+              setScanScreenTitle(title);
+              setShowScanScreen(true);
+            }}
+          />
+        );
       case "my":
         return <MyPageScreen />;
       default:
-        return <HomeScreen onPetPress={setSelectedPet} />;
+        return (
+          <HomeScreen
+            onPetPress={setSelectedPet}
+            onMissingReportPress={() => setShowMissingReport(true)}
+            onScanPress={(title) => {
+              setScanScreenTitle(title);
+              setShowScanScreen(true);
+            }}
+          />
+        );
     }
   };
 
@@ -83,6 +129,31 @@ export default function App() {
             onClose={() => setSelectedPet(null)}
           />
         )}
+      </Modal>
+      <Modal
+        visible={showMissingReport}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowMissingReport(false)}
+      >
+        <MissingReportScreen
+          pets={pets}
+          onClose={() => setShowMissingReport(false)}
+          onSuccess={() => {
+            // 실종 신고 성공 시 처리 (예: 상태 업데이트 등)
+          }}
+        />
+      </Modal>
+      <Modal
+        visible={showScanScreen}
+        animationType="slide"
+        presentationStyle="fullScreen"
+        onRequestClose={() => setShowScanScreen(false)}
+      >
+        <ScanScreen
+          title={scanScreenTitle}
+          onClose={() => setShowScanScreen(false)}
+        />
       </Modal>
       <StatusBar style="dark" />
     </>

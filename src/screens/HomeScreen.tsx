@@ -7,17 +7,23 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  Modal,
 } from "react-native";
 import { useState } from "react";
+import { Bell, Pin, Camera, LifeBuoy } from "lucide-react-native";
 import PetCard from "../components/PetCard";
 import ActionGrid from "../components/ActionGrid";
 import InfoCard from "../components/InfoCard";
+import VaccinationScreen from "./VaccinationScreen";
+import MedicalRecordScreen from "./MedicalRecordScreen";
+import InsuranceScreen from "./InsuranceScreen";
 
 interface Pet {
   id: string;
   name: string;
   birthDate: string;
   gender: "수컷" | "암컷";
+  breed?: string;
   profileImage?: string;
   isNosePrintVerified: boolean;
   status: "등록 완료" | "실종 중";
@@ -25,58 +31,73 @@ interface Pet {
 
 interface HomeScreenProps {
   onPetPress?: (pet: Pet) => void;
+  onMissingReportPress?: () => void;
+  onScanPress?: (title: string) => void;
 }
 
-export default function HomeScreen({ onPetPress }: HomeScreenProps) {
+export default function HomeScreen({
+  onPetPress,
+  onMissingReportPress,
+  onScanPress,
+}: HomeScreenProps) {
   // 샘플 반려견 데이터
   const [pets] = useState<Pet[]>([
     {
-      id: "PUDDY-2024-001",
+      id: "000-000-0000001",
       name: "Coco",
       birthDate: "2021.05.15",
       gender: "암컷",
+      breed: "골든 리트리버",
       isNosePrintVerified: true,
       status: "등록 완료",
     },
     {
-      id: "PUDDY-2024-002",
+      id: "000-000-0000002",
       name: "Max",
       birthDate: "2020.03.20",
       gender: "수컷",
+      breed: "래브라도 리트리버",
       isNosePrintVerified: true,
       status: "등록 완료",
     },
   ]);
 
+  const [showVaccination, setShowVaccination] = useState(false);
+  const [showMedicalRecord, setShowMedicalRecord] = useState(false);
+  const [showInsurance, setShowInsurance] = useState(false);
+
   const handlePetCardPress = (pet: Pet) => {
     onPetPress?.(pet);
+  };
+
+  const handleRegisterPress = () => {
+    onScanPress?.("강아지 등록");
   };
 
   const actions = [
     {
       id: "vaccination",
-      icon: "💉",
+      iconName: "vaccination" as const,
       label: "예방접종",
-      onPress: () => Alert.alert("예방접종", "예방접종 일정을 확인합니다."),
+      onPress: () => setShowVaccination(true),
     },
     {
       id: "medical",
-      icon: "🏥",
+      iconName: "medical" as const,
       label: "진료기록",
-      onPress: () => Alert.alert("진료기록", "병원 이력을 조회합니다."),
+      onPress: () => setShowMedicalRecord(true),
     },
     {
       id: "insurance",
-      icon: "📄",
-      label: "보험청구",
-      onPress: () =>
-        Alert.alert("보험청구", "보험 청구 및 신원검증을 진행합니다."),
+      iconName: "insurance" as const,
+      label: "보험정보",
+      onPress: () => setShowInsurance(true),
     },
     {
       id: "missing",
-      icon: "🚨",
+      iconName: "missing" as const,
       label: "실종신고",
-      onPress: () => Alert.alert("실종신고", "실종 신고를 진행합니다."),
+      onPress: () => onMissingReportPress?.(),
     },
   ];
 
@@ -89,6 +110,13 @@ export default function HomeScreen({ onPetPress }: HomeScreenProps) {
           style={styles.logo}
           resizeMode="contain"
         />
+        <TouchableOpacity
+          style={styles.notificationButton}
+          onPress={() => Alert.alert("알림", "알림을 확인합니다.")}
+          activeOpacity={0.7}
+        >
+          <Bell size={24} color="#1A1A1A" />
+        </TouchableOpacity>
       </View>
 
       {/* 메인 콘텐츠 */}
@@ -99,7 +127,11 @@ export default function HomeScreen({ onPetPress }: HomeScreenProps) {
       >
         {/* 반려견 신분증 카드 */}
         <View style={styles.cardContainer}>
-          <PetCard pets={pets} onCardPress={handlePetCardPress} />
+          <PetCard
+            pets={pets}
+            onCardPress={handlePetCardPress}
+            onRegisterPress={handleRegisterPress}
+          />
         </View>
 
         {/* 메인 기능 버튼 영역 */}
@@ -109,95 +141,52 @@ export default function HomeScreen({ onPetPress }: HomeScreenProps) {
         <View style={styles.infoCardContainer}>
           <View style={styles.infoCardWrapper}>
             <InfoCard
-              title="유기견을 발견하셨나요?"
-              subtitle="지금 바로 주인을 찾아주세요."
-              onPress={() =>
-                Alert.alert("유기견 발견", "주인 찾기를 시작합니다.")
-              }
+              title="유기견 발견"
+              subtitle="유기견을 발견하셨나요? 지금 바로 주인을 찾아주세요."
+              onPress={() => onScanPress?.("유기견 발견")}
               backgroundColor="#FFFEF5"
             />
           </View>
           <View style={styles.infoCardWrapper}>
             <InfoCard
-              title="강아지 신원 인증하기."
-              subtitle="동물병원 / 보험사 전용"
-              onPress={() =>
-                Alert.alert("신원 인증", "신원 인증을 시작합니다.")
-              }
+              title="신원 인증하기"
+              subtitle="반려견 신원 인증이 필요할 때 사용하세요."
+              onPress={() => onScanPress?.("신원 인증")}
               backgroundColor="#FFFFFF"
             />
           </View>
         </View>
-
-        {/* 건강 관리 섹션 */}
-        <View style={styles.healthSection}>
-          <Text style={styles.healthSectionTitle}>
-            🤍 CoCo의 건강, 우리가 함께 지켜요.
-          </Text>
-
-          {/* 예방접종 알림 카드 */}
-          <TouchableOpacity
-            style={styles.healthCard}
-            onPress={() =>
-              Alert.alert("알림 등록", "예방접종 알림을 등록합니다.")
-            }
-            activeOpacity={0.7}
-          >
-            <View style={styles.healthCardContent}>
-              <Text style={styles.healthCardText}>
-                다음 예방접종까지 D-37일입니다.
-              </Text>
-              <View style={styles.healthCardButton}>
-                <Text style={styles.healthCardButtonIcon}>📌</Text>
-                <Text style={styles.healthCardButtonText}>알림 등록하기</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          {/* 건강 기록 카드 */}
-          <TouchableOpacity
-            style={styles.healthCard}
-            onPress={() =>
-              Alert.alert("기록 추가", "건강/사진 기록을 추가합니다.")
-            }
-            activeOpacity={0.7}
-          >
-            <View style={styles.healthCardContent}>
-              <Text style={styles.healthCardText}>
-                오늘도 CoCo의 하루를 기록해볼까요?
-              </Text>
-              <View style={styles.healthCardButton}>
-                <Text style={styles.healthCardButtonIcon}>📷</Text>
-                <Text style={styles.healthCardButtonText}>
-                  건강/사진 기록 추가
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          {/* 긴급 연락처 카드 */}
-          <TouchableOpacity
-            style={styles.healthCard}
-            onPress={() =>
-              Alert.alert("연락처 등록", "긴급 연락처를 등록합니다.")
-            }
-            activeOpacity={0.7}
-          >
-            <View style={styles.healthCardContent}>
-              <Text style={styles.healthCardText}>
-                긴급 상황 대비를 위한 연락처를 추가하면{"\n"}
-                유기·실종 예방 확률이 3배 높아집니다.
-              </Text>
-              <View style={styles.healthCardButton}>
-                <Text style={styles.healthCardButtonIcon}>🛟</Text>
-                <Text style={styles.healthCardButtonText}>
-                  긴급 연락처 등록
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
+
+      {/* 예방접종 모달 */}
+      <Modal
+        visible={showVaccination}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowVaccination(false)}
+      >
+        <VaccinationScreen onBack={() => setShowVaccination(false)} />
+      </Modal>
+
+      {/* 진료기록 모달 */}
+      <Modal
+        visible={showMedicalRecord}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowMedicalRecord(false)}
+      >
+        <MedicalRecordScreen onBack={() => setShowMedicalRecord(false)} />
+      </Modal>
+
+      {/* 보험정보 모달 */}
+      <Modal
+        visible={showInsurance}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowInsurance(false)}
+      >
+        <InsuranceScreen onBack={() => setShowInsurance(false)} />
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -208,17 +197,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF6EC",
   },
   header: {
-    backgroundColor: "#FFFFFF",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 6,
   },
   logo: {
     width: 100,
     height: 32,
+  },
+  notificationButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 20,
   },
   scrollView: {
     flex: 1,
@@ -285,7 +279,6 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   healthCardButtonIcon: {
-    fontSize: 16,
     marginRight: 6,
   },
   healthCardButtonText: {

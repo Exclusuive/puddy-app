@@ -22,9 +22,23 @@ export default function InfoCard({
       style={[styles.card, { backgroundColor }]}
     >
       <View style={styles.content}>
-        <Text style={styles.title}>{title}</Text>
-        {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-        {description && <Text style={styles.description}>{description}</Text>}
+        <Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+          {title}
+        </Text>
+        {subtitle && (
+          <Text style={styles.subtitle} numberOfLines={2} ellipsizeMode="tail">
+            {subtitle}
+          </Text>
+        )}
+        {description && (
+          <Text
+            style={styles.description}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {description}
+          </Text>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -33,9 +47,10 @@ export default function InfoCard({
 const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
-    padding: 14,
+    padding: 16,
     marginBottom: 0,
     marginHorizontal: 0,
+    minHeight: 100,
     borderWidth: 1,
     borderColor: "#F3F4F6",
     shadowColor: "#000",
@@ -48,23 +63,24 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   content: {
-    gap: 8,
+    gap: 6,
   },
   title: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#111827",
-    marginBottom: 2,
+    marginBottom: 0,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "600",
     color: "#6B7280",
-    marginTop: 2,
+    marginTop: 0,
+    lineHeight: 16,
   },
   description: {
-    fontSize: 13,
+    fontSize: 12,
     color: "#9CA3AF",
-    lineHeight: 20,
+    lineHeight: 16,
   },
 });

@@ -1,21 +1,45 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Home, Heart, User } from "lucide-react-native";
 
 interface BottomNavProps {
-  activeTab: "home" | "scan" | "my";
-  onTabPress: (tab: "home" | "scan" | "my") => void;
+  activeTab: "health" | "home" | "my";
+  onTabPress: (tab: "health" | "home" | "my") => void;
 }
 
 export default function BottomNav({ activeTab, onTabPress }: BottomNavProps) {
   return (
     <View style={styles.container}>
       <View style={styles.navContent}>
+        {/* 건강관리 */}
+        <TouchableOpacity
+          onPress={() => onTabPress("health")}
+          activeOpacity={0.7}
+          style={styles.navItem}
+        >
+          <Heart
+            size={24}
+            color={activeTab === "health" ? "#FF9D4D" : "#6B7280"}
+          />
+          <Text
+            style={[
+              styles.navLabel,
+              activeTab === "health" && styles.navLabelActive,
+            ]}
+          >
+            건강관리
+          </Text>
+        </TouchableOpacity>
+
         {/* 홈 */}
         <TouchableOpacity
           onPress={() => onTabPress("home")}
           activeOpacity={0.7}
           style={styles.navItem}
         >
-          <Text style={styles.navIcon}>🏠</Text>
+          <Home
+            size={24}
+            color={activeTab === "home" ? "#FF9D4D" : "#6B7280"}
+          />
           <Text
             style={[
               styles.navLabel,
@@ -26,30 +50,16 @@ export default function BottomNav({ activeTab, onTabPress }: BottomNavProps) {
           </Text>
         </TouchableOpacity>
 
-        {/* 등록하기 */}
-        <TouchableOpacity
-          onPress={() => onTabPress("scan")}
-          activeOpacity={0.7}
-          style={styles.navItem}
-        >
-          <Text style={styles.navIcon}>📸</Text>
-          <Text
-            style={[
-              styles.navLabel,
-              activeTab === "scan" && styles.navLabelActive,
-            ]}
-          >
-            등록하기
-          </Text>
-        </TouchableOpacity>
-
         {/* 마이페이지 */}
         <TouchableOpacity
           onPress={() => onTabPress("my")}
           activeOpacity={0.7}
           style={styles.navItem}
         >
-          <Text style={styles.navIcon}>👤</Text>
+          <User
+            size={24}
+            color={activeTab === "my" ? "#FF9D4D" : "#6B7280"}
+          />
           <Text
             style={[
               styles.navLabel,
@@ -87,10 +97,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingVertical: 8,
-  },
-  navIcon: {
-    fontSize: 24,
-    marginBottom: 4,
   },
   navLabel: {
     fontSize: 12,

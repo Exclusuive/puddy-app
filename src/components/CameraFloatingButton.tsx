@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
+import { Camera } from "lucide-react-native";
 
 const { width } = Dimensions.get("window");
 
@@ -26,7 +27,7 @@ export default function CameraFloatingButton({
         },
       ]}
     >
-      <Text style={styles.icon}>📸</Text>
+      <Camera size={32} color="#FFFFFF" />
     </TouchableOpacity>
   );
 }
@@ -52,8 +53,5 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 10, // BottomNav보다 위에 표시되도록 높은 elevation
     zIndex: 1000, // BottomNav 위에 표시되도록 zIndex 설정
-  },
-  icon: {
-    fontSize: 32,
   },
 });

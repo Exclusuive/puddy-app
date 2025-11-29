@@ -6,13 +6,19 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  Modal,
 } from "react-native";
+import { useState } from "react";
+import { Syringe, Hospital, Camera } from "lucide-react-native";
+import VaccinationScreen from "./VaccinationScreen";
+import MedicalRecordScreen from "./MedicalRecordScreen";
 
 interface Pet {
   id: string;
   name: string;
   birthDate: string;
   gender: "수컷" | "암컷";
+  breed?: string;
   profileImage?: string;
   isNosePrintVerified: boolean;
   status: "등록 완료" | "실종 중";
@@ -23,7 +29,13 @@ interface PetDetailScreenProps {
   onClose: () => void;
 }
 
-export default function PetDetailScreen({ pet, onClose }: PetDetailScreenProps) {
+export default function PetDetailScreen({
+  pet,
+  onClose,
+}: PetDetailScreenProps) {
+  const [showVaccination, setShowVaccination] = useState(false);
+  const [showMedicalRecord, setShowMedicalRecord] = useState(false);
+
   // 생년월일에서 나이 계산 함수
   const calculateAge = (birthDate: string): string => {
     try {
@@ -130,22 +142,6 @@ export default function PetDetailScreen({ pet, onClose }: PetDetailScreenProps) 
               )}
             </View>
           </View>
-        </View>
-
-        {/* 액션 버튼들 */}
-        <View style={styles.actionSection}>
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionButtonIcon}>💉</Text>
-            <Text style={styles.actionButtonText}>예방접종 기록</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionButtonIcon}>🏥</Text>
-            <Text style={styles.actionButtonText}>진료 기록</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton}>
-            <Text style={styles.actionButtonIcon}>📷</Text>
-            <Text style={styles.actionButtonText}>사진 기록</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -331,7 +327,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   actionButtonIcon: {
-    fontSize: 24,
     marginRight: 12,
   },
   actionButtonText: {
@@ -340,4 +335,3 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-

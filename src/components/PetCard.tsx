@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { useState } from "react";
+import { Plus } from "lucide-react-native";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CONTAINER_PADDING = 16;
@@ -18,6 +19,7 @@ interface Pet {
   name: string;
   birthDate: string;
   gender: "수컷" | "암컷";
+  breed?: string;
   profileImage?: string;
   isNosePrintVerified: boolean;
   status: "등록 완료" | "실종 중";
@@ -26,9 +28,14 @@ interface Pet {
 interface PetCardProps {
   pets: Pet[];
   onCardPress?: (pet: Pet) => void;
+  onRegisterPress?: () => void;
 }
 
-export default function PetCard({ pets, onCardPress }: PetCardProps) {
+export default function PetCard({
+  pets,
+  onCardPress,
+  onRegisterPress,
+}: PetCardProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleScroll = (event: any) => {
@@ -36,6 +43,8 @@ export default function PetCard({ pets, onCardPress }: PetCardProps) {
     const index = Math.round(scrollPosition / CARD_WIDTH);
     setCurrentIndex(index);
   };
+
+  const totalCards = pets.length + 1; // 등록하기 카드 포함
 
   // 생년월일에서 나이 계산 함수
   const calculateAge = (birthDate: string): string => {
@@ -79,13 +88,6 @@ export default function PetCard({ pets, onCardPress }: PetCardProps) {
             style={[styles.cardWrapper, { width: CARD_WIDTH }]}
           >
             <View style={styles.card}>
-              {/* 신분증 헤더 */}
-              <View style={styles.cardHeader}>
-                <Text style={styles.headerText}>
-                  Puddy PASS - 반려견 신분증
-                </Text>
-              </View>
-
               <View style={styles.cardBody}>
                 {/* 왼쪽: 프로필 이미지 */}
                 <View style={styles.profileContainer}>
@@ -96,17 +98,17 @@ export default function PetCard({ pets, onCardPress }: PetCardProps) {
                       resizeMode="cover"
                     />
                   </View>
-                  {/* 상태 배지 - 이미지 아래 */}
+                  {/* 상태 배지 - 사진 밑 */}
                   <View style={styles.statusContainer}>
                     {pet.status === "실종 중" ? (
                       <View style={styles.statusBadgeDanger}>
                         <Text style={styles.statusBadgeTextDanger}>
-                          🔴 실종 중
+                          실종 중
                         </Text>
                       </View>
                     ) : (
                       <View style={styles.statusBadge}>
-                        <Text style={styles.statusBadgeText}>✓ 등록 완료</Text>
+                        <Text style={styles.statusBadgeText}>등록 완료</Text>
                       </View>
                     )}
                   </View>
@@ -114,46 +116,74 @@ export default function PetCard({ pets, onCardPress }: PetCardProps) {
 
                 {/* 오른쪽: 반려견 정보 */}
                 <View style={styles.infoContainer}>
-                  <View style={styles.infoSection}>
-                    <Text style={styles.infoLabel}>ID</Text>
+                  {/* 제목 */}
+                  <Text style={styles.headerText}>강아지 비문 신분증</Text>
+
+                  {/* 등록 번호 */}
+                  <View style={styles.infoRow}>
+                    <Text style={styles.infoLabel}>등록번호</Text>
                     <Text style={styles.infoValue}>{pet.id}</Text>
                   </View>
 
                   <View style={styles.divider} />
 
-                  {/* 이름과 성별을 같은 라인에 */}
-                  <View style={styles.infoSection}>
-                    <Text style={styles.infoLabel}>이름 / 성별</Text>
-                    <View style={styles.nameGenderRow}>
-                      <Text style={styles.infoValue}>{pet.name}</Text>
-                      <Text style={styles.genderSeparator}> | </Text>
-                      <Text style={styles.infoValueSmall}>{pet.gender}</Text>
-                    </View>
+                  {/* 이름 / 성별 */}
+                  <View style={styles.infoRow}>
+                    <Text style={styles.infoLabel}>이름</Text>
+                    <Text style={styles.nameValue}>{pet.name}</Text>
+                    <Text style={styles.separator}> / </Text>
+                    <Text style={styles.infoValue}>{pet.gender}</Text>
                   </View>
 
                   <View style={styles.divider} />
 
-                  <View style={styles.infoSection}>
+                  {/* 생년월일 (나이 포함) */}
+                  <View style={styles.infoRow}>
                     <Text style={styles.infoLabel}>생년월일</Text>
-                    <View style={styles.birthDateRow}>
-                      <Text style={styles.infoValueSmall}>{pet.birthDate}</Text>
-                      <Text style={styles.ageText}>
-                        {" "}
-                        ({calculateAge(pet.birthDate)})
-                      </Text>
-                    </View>
+                    <Text style={styles.infoValue}>
+                      {pet.birthDate} ({calculateAge(pet.birthDate)})
+                    </Text>
+                  </View>
+
+                  <View style={styles.divider} />
+
+                  {/* 품종 */}
+                  <View style={styles.infoRow}>
+                    <Text style={styles.infoLabel}>품종</Text>
+                    <Text style={styles.infoValue}>{pet.breed || "-"}</Text>
                   </View>
                 </View>
               </View>
             </View>
           </TouchableOpacity>
         ))}
+
+        {/* 등록하기 카드 */}
+        <TouchableOpacity
+          onPress={() => onRegisterPress?.()}
+          activeOpacity={0.9}
+          style={[styles.cardWrapper, { width: CARD_WIDTH }]}
+        >
+          <View style={styles.card}>
+            <View style={styles.registerCardBody}>
+              <View style={styles.registerContent}>
+                <View style={styles.registerIconWrapper}>
+                  <Plus size={48} color="#FF9D4D" />
+                </View>
+                <Text style={styles.registerText}>강아지 등록하기</Text>
+                <Text style={styles.registerSubtext}>
+                  새로운 반려견을 등록해주세요
+                </Text>
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
       </ScrollView>
 
       {/* 캐러셀 인디케이터 */}
-      {pets.length > 1 && (
+      {totalCards > 1 && (
         <View style={styles.indicatorContainer}>
-          {pets.map((_, index) => (
+          {Array.from({ length: totalCards }).map((_, index) => (
             <View
               key={index}
               style={[
@@ -184,64 +214,64 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
   },
   card: {
-    backgroundColor: "#FFFEF5",
-    borderRadius: 16,
-    overflow: "hidden",
-    borderWidth: 2,
-    borderColor: "#F5E6D3",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  cardHeader: {
-    backgroundColor: "#FFFEF5",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#F5E6D3",
-  },
-  headerText: {
-    color: "#8B6914",
-    fontSize: 12,
-    textAlign: "center",
-    fontWeight: "600",
-    letterSpacing: 0.8,
-  },
-  cardBody: {
-    flexDirection: "row",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    alignItems: "flex-start",
-    backgroundColor: "#FFFEF5",
-  },
-  profileContainer: {
-    marginRight: 16,
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-  profileImageWrapper: {
-    width: 90,
-    height: 110,
+    backgroundColor: "#F9FDFE",
     borderRadius: 8,
-    backgroundColor: "#E5E7EB",
-    alignItems: "center",
-    justifyContent: "center",
     overflow: "hidden",
-    borderWidth: 2,
-    borderColor: "#D1D5DB",
+    borderWidth: 1,
+    borderColor: "#D0E8F0",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
     },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  headerText: {
+    color: "#111111",
+    fontSize: 14,
+    fontWeight: "700",
+    marginBottom: 12,
+    textAlign: "center",
+    letterSpacing: 0.5,
+  },
+  cardBody: {
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    alignItems: "center",
+    backgroundColor: "#F9FDFE",
+    minHeight: 160,
+    height: 200,
+  },
+  profileContainer: {
+    marginRight: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statusContainer: {
+    marginTop: 8,
+    alignItems: "center",
+  },
+  profileImageWrapper: {
+    width: 100,
+    height: 120,
+    borderRadius: 4,
+    backgroundColor: "#E3F2FD",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#BBDEFB",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 3,
+    elevation: 2,
   },
   profileImage: {
     width: "100%",
@@ -261,78 +291,106 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flex: 1,
+    justifyContent: "space-between",
   },
-  infoSection: {
-    marginBottom: 10,
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 6,
+    flexWrap: "wrap",
   },
   infoLabel: {
-    color: "#6B7280",
+    color: "#505050",
     fontSize: 12,
-    fontWeight: "500",
-    marginBottom: 4,
-    letterSpacing: 0.3,
+    fontWeight: "600",
+    minWidth: 65,
+    marginRight: 8,
   },
   infoValue: {
-    color: "#111827",
-    fontSize: 17,
-    fontWeight: "bold",
-    letterSpacing: 0.5,
-  },
-  infoValueSmall: {
-    color: "#111827",
-    fontSize: 15,
+    color: "#111111",
+    fontSize: 13,
     fontWeight: "600",
+    flex: 1,
   },
-  nameGenderRow: {
-    flexDirection: "row",
-    alignItems: "center",
+  nameValue: {
+    color: "#111111",
+    fontSize: 18,
+    fontWeight: "700",
+    letterSpacing: 0.3,
   },
-  genderSeparator: {
-    color: "#9CA3AF",
-    fontSize: 16,
-    fontWeight: "300",
-  },
-  birthDateRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  ageText: {
-    color: "#6B7280",
-    fontSize: 15,
-    fontWeight: "500",
+  separator: {
+    color: "#64B5F6",
+    fontSize: 13,
+    marginHorizontal: 4,
+    fontWeight: "400",
   },
   divider: {
     height: 1,
-    backgroundColor: "#E5E7EB",
-    marginBottom: 10,
-  },
-  statusContainer: {
-    marginTop: 12,
-    alignItems: "center",
+    backgroundColor: "#BBDEFB",
+    marginVertical: 4,
   },
   statusBadge: {
-    backgroundColor: "#D1FAE5",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    alignSelf: "center",
+    backgroundColor: "#E8F5E9",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#4CAF50",
   },
   statusBadgeDanger: {
-    backgroundColor: "#FEE2E2",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    alignSelf: "center",
+    backgroundColor: "#FFEBEE",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#F44336",
   },
   statusBadgeText: {
-    color: "#065F46",
-    fontSize: 13,
+    color: "#2E7D32",
+    fontSize: 11,
     fontWeight: "600",
   },
   statusBadgeTextDanger: {
-    color: "#991B1B",
-    fontSize: 13,
+    color: "#C62828",
+    fontSize: 11,
     fontWeight: "600",
+  },
+  registerCardBody: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F9FDFE",
+    minHeight: 160,
+    height: 200,
+  },
+  registerContent: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+  },
+  registerIconWrapper: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: "#FFF6EC",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#FF9D4D",
+    borderStyle: "dashed",
+  },
+  registerText: {
+    color: "#111111",
+    fontSize: 18,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+  registerSubtext: {
+    color: "#505050",
+    fontSize: 12,
+    fontWeight: "500",
+    textAlign: "center",
   },
   indicatorContainer: {
     flexDirection: "row",

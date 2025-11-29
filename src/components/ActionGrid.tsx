@@ -1,8 +1,9 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Syringe, Hospital, FileText, AlertCircle } from "lucide-react-native";
 
 interface ActionItem {
   id: string;
-  icon: string;
+  iconName: "vaccination" | "medical" | "insurance" | "missing";
   label: string;
   onPress: () => void;
 }
@@ -11,21 +12,33 @@ interface ActionGridProps {
   actions: ActionItem[];
 }
 
+const iconMap = {
+  vaccination: Syringe,
+  medical: Hospital,
+  insurance: FileText,
+  missing: AlertCircle,
+};
+
 export default function ActionGrid({ actions }: ActionGridProps) {
   return (
     <View style={styles.container}>
       <View style={styles.grid}>
-        {actions.map((action) => (
-          <TouchableOpacity
-            key={action.id}
-            onPress={action.onPress}
-            activeOpacity={0.7}
-            style={styles.actionButton}
-          >
-            <Text style={styles.icon}>{action.icon}</Text>
-            <Text style={styles.label}>{action.label}</Text>
-          </TouchableOpacity>
-        ))}
+        {actions.map((action) => {
+          const IconComponent = iconMap[action.iconName];
+          return (
+            <TouchableOpacity
+              key={action.id}
+              onPress={action.onPress}
+              activeOpacity={0.7}
+              style={styles.actionButton}
+            >
+              {IconComponent && (
+                <IconComponent size={28} color="#FF9D4D" style={styles.icon} />
+              )}
+              <Text style={styles.label}>{action.label}</Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );
@@ -62,7 +75,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   icon: {
-    fontSize: 28,
     marginBottom: 6,
   },
   label: {
