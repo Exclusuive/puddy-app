@@ -13,7 +13,6 @@ import { useState } from "react";
 import { Bell, Phone } from "lucide-react-native";
 import PetCard from "../components/PetCard";
 import ActionGrid from "../components/ActionGrid";
-import InfoCard from "../components/InfoCard";
 import VaccinationScreen from "./VaccinationScreen";
 import MedicalRecordScreen from "./MedicalRecordScreen";
 import InsuranceScreen from "./InsuranceScreen";
@@ -45,7 +44,7 @@ export default function HomeScreen({
   const [pets] = useState<Pet[]>([
     {
       id: "000-000-0000001",
-      name: "Coco",
+      name: "콩순이",
       birthDate: "2021.05.15",
       gender: "암컷",
       breed: "골든 리트리버",
@@ -54,7 +53,7 @@ export default function HomeScreen({
     },
     {
       id: "000-000-0000002",
-      name: "Max",
+      name: "콩순이",
       birthDate: "2020.03.20",
       gender: "수컷",
       breed: "래브라도 리트리버",
@@ -81,24 +80,59 @@ export default function HomeScreen({
       id: "vaccination",
       iconName: "vaccination" as const,
       label: "예방접종",
+      subtitle: "다음 접종까지",
+      mainValue: "D-37",
+      mainValueColor: "#FF9D4D",
+      badge: {
+        text: "양호",
+        color: "#FF9D4D",
+      },
+      details: [
+        {
+          label: "최근 접종",
+          value: "1달 전",
+        },
+      ],
       onPress: () => setShowVaccination(true),
     },
     {
       id: "medical",
       iconName: "medical" as const,
       label: "진료기록",
+      subtitle: "검사지연",
+      mainValue: "심장사상충",
+      mainValueColor: "#FF9D4D",
+      details: [
+        {
+          label: "최근 진료일",
+          value: "2025.11.20",
+        },
+        {
+          label: "총 진료 내역",
+          value: "N건",
+        },
+      ],
       onPress: () => setShowMedicalRecord(true),
     },
     {
       id: "insurance",
       iconName: "insurance" as const,
       label: "보험정보",
+      mainValue: "25",
+      mainValueColor: "#FF9D4D",
+      subtitle: "만원/월",
       onPress: () => setShowInsurance(true),
     },
     {
       id: "missing",
       iconName: "missing" as const,
       label: "실종신고",
+      mainValue: "찾는중",
+      mainValueColor: "#FF9D4D",
+      badge: {
+        text: "등록완료",
+        color: "#FF9D4D",
+      },
       onPress: () => onMissingReportPress?.(),
     },
   ];
@@ -127,6 +161,12 @@ export default function HomeScreen({
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
+        {/* 인사 문구 */}
+        <View style={styles.greetingContainer}>
+          <Text style={styles.greetingText}>안녕하세요,</Text>
+          <Text style={styles.greetingName}>상준님!</Text>
+        </View>
+
         {/* 반려견 신분증 카드 */}
         <View style={styles.cardContainer}>
           <PetCard
@@ -136,28 +176,14 @@ export default function HomeScreen({
           />
         </View>
 
+        {/* 건강관리 섹션 헤더 */}
+        <View style={styles.healthSectionHeader}>
+          <Text style={styles.healthSectionTitle}>건강관리</Text>
+          <Text style={styles.healthSectionDate}>2025년 12월 1일 월요일</Text>
+        </View>
+
         {/* 메인 기능 버튼 영역 */}
         <ActionGrid actions={actions} />
-
-        {/* InfoCard 2열 레이아웃 */}
-        <View style={styles.infoCardContainer}>
-          <View style={styles.infoCardWrapper}>
-            <InfoCard
-              title="유기견 발견"
-              subtitle="유기견을 발견하셨나요? 지금 바로 주인을 찾아주세요."
-              onPress={() => onScanPress?.("유기견 발견")}
-              backgroundColor="#FFFEF5"
-            />
-          </View>
-          <View style={styles.infoCardWrapper}>
-            <InfoCard
-              title="신원 인증하기"
-              subtitle="반려견 신원 인증이 필요할 때 사용하세요."
-              onPress={() => onScanPress?.("신원 인증")}
-              backgroundColor="#FFFFFF"
-            />
-          </View>
-        </View>
       </ScrollView>
 
       {/* 예방접종 모달 */}
@@ -236,101 +262,38 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingBottom: 90,
+    flexGrow: 1,
   },
-  cardContainer: {
+  greetingContainer: {
+    paddingHorizontal: 16,
     paddingTop: 12,
   },
-  infoCardContainer: {
-    flexDirection: "row",
+  greetingText: {
+    fontSize: 24,
+    color: "#111111",
+    fontWeight: "700",
+  },
+  greetingName: {
+    fontSize: 24,
+    color: "#FF6842",
+    fontWeight: "700",
+    marginTop: 4,
+  },
+  cardContainer: {},
+  healthSectionHeader: {
     paddingHorizontal: 16,
-    gap: 12,
-    marginBottom: 10,
-    alignItems: "stretch",
-  },
-  infoCardWrapper: {
-    flex: 1,
-    alignSelf: "stretch",
-  },
-  emergencyContactContainer: {
-    paddingHorizontal: 16,
-    marginTop: 12,
-    marginBottom: 10,
-  },
-  emergencyContactButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FF9D4D",
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  emergencyContactIcon: {
-    marginRight: 8,
-  },
-  emergencyContactText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
-  healthSection: {
-    paddingHorizontal: 16,
-    marginTop: 8,
+    paddingTop: 20,
+    paddingBottom: 12,
   },
   healthSectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#1F2937",
-    marginBottom: 16,
-    paddingHorizontal: 4,
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#111111",
+    marginBottom: 8,
   },
-  healthCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: "#F3F4F6",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  healthCardContent: {
-    gap: 12,
-  },
-  healthCardText: {
-    fontSize: 14,
-    color: "#374151",
-    lineHeight: 20,
-  },
-  healthCardButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF6EC",
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-    alignSelf: "flex-start",
-  },
-  healthCardButtonIcon: {
-    marginRight: 6,
-  },
-  healthCardButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#FF9D4D",
+  healthSectionDate: {
+    fontSize: 16,
+    color: "#505050",
+    fontWeight: "300",
   },
 });

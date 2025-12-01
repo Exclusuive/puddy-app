@@ -25,7 +25,7 @@ interface Pet {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"health" | "home" | "my">("home");
+  const [activeTab, setActiveTab] = useState<"home" | "scan" | "health" | "my">("home");
   const [selectedPet, setSelectedPet] = useState<Pet | null>(null);
   const [showMissingReport, setShowMissingReport] = useState(false);
   const [showScanScreen, setShowScanScreen] = useState(false);
@@ -64,8 +64,6 @@ export default function App() {
 
   const renderScreen = () => {
     switch (activeTab) {
-      case "health":
-        return <HealthScreen />;
       case "home":
         return (
           <HomeScreen
@@ -84,6 +82,15 @@ export default function App() {
             }}
           />
         );
+      case "scan":
+        return (
+          <ScanScreen
+            title="코 사진 촬영"
+            onClose={() => setActiveTab("home")}
+          />
+        );
+      case "health":
+        return <HealthScreen />;
       case "my":
         return <MyPageScreen />;
       default:

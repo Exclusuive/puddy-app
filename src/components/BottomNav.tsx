@@ -1,35 +1,15 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Home, Heart, User } from "lucide-react-native";
+import { Home, Camera, Heart, User } from "lucide-react-native";
 
 interface BottomNavProps {
-  activeTab: "health" | "home" | "my";
-  onTabPress: (tab: "health" | "home" | "my") => void;
+  activeTab: "home" | "scan" | "health" | "my";
+  onTabPress: (tab: "home" | "scan" | "health" | "my") => void;
 }
 
 export default function BottomNav({ activeTab, onTabPress }: BottomNavProps) {
   return (
     <View style={styles.container}>
       <View style={styles.navContent}>
-        {/* 건강관리 */}
-        <TouchableOpacity
-          onPress={() => onTabPress("health")}
-          activeOpacity={0.7}
-          style={styles.navItem}
-        >
-          <Heart
-            size={24}
-            color={activeTab === "health" ? "#FF9D4D" : "#6B7280"}
-          />
-          <Text
-            style={[
-              styles.navLabel,
-              activeTab === "health" && styles.navLabelActive,
-            ]}
-          >
-            건강관리
-          </Text>
-        </TouchableOpacity>
-
         {/* 홈 */}
         <TouchableOpacity
           onPress={() => onTabPress("home")}
@@ -47,6 +27,46 @@ export default function BottomNav({ activeTab, onTabPress }: BottomNavProps) {
             ]}
           >
             홈
+          </Text>
+        </TouchableOpacity>
+
+        {/* 스캔 */}
+        <TouchableOpacity
+          onPress={() => onTabPress("scan")}
+          activeOpacity={0.7}
+          style={styles.navItem}
+        >
+          <Camera
+            size={24}
+            color={activeTab === "scan" ? "#FF9D4D" : "#6B7280"}
+          />
+          <Text
+            style={[
+              styles.navLabel,
+              activeTab === "scan" && styles.navLabelActive,
+            ]}
+          >
+            스캔
+          </Text>
+        </TouchableOpacity>
+
+        {/* 건강관리 */}
+        <TouchableOpacity
+          onPress={() => onTabPress("health")}
+          activeOpacity={0.7}
+          style={styles.navItem}
+        >
+          <Heart
+            size={24}
+            color={activeTab === "health" ? "#FF9D4D" : "#6B7280"}
+          />
+          <Text
+            style={[
+              styles.navLabel,
+              activeTab === "health" && styles.navLabelActive,
+            ]}
+          >
+            건강관리
           </Text>
         </TouchableOpacity>
 

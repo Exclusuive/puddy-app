@@ -89,6 +89,11 @@ export default function PetCard({
             activeOpacity={0.9}
             style={[styles.cardWrapper, { width: CARD_WIDTH }]}
           >
+            <View style={styles.cardTitleContainer}>
+              <Text style={styles.cardTitle}>
+                반려견 콩순이의 강아지 신분증이에요.
+              </Text>
+            </View>
             <View style={styles.card}>
               {/* 비문 ID - 카드 전체 맨 위 */}
               <View style={styles.registrationNumberHeader}>
@@ -169,6 +174,11 @@ export default function PetCard({
             activeOpacity={0.9}
             style={[styles.cardWrapper, { width: CARD_WIDTH }]}
           >
+            <View style={styles.cardTitleContainer}>
+              <Text style={styles.cardTitle}>
+                강아지 등록하기 버튼을 눌러 새로운 가족을 맞이해주세요.
+              </Text>
+            </View>
             <View style={styles.card}>
               <View style={styles.registerCardBody}>
                 <View style={styles.registerContent}>
@@ -210,6 +220,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: CONTAINER_PADDING,
     marginBottom: 12,
   },
+  cardTitleContainer: {
+    paddingVertical: 12,
+  },
+  cardTitle: {
+    fontSize: 14,
+    color: "#393842",
+    fontWeight: "400",
+  },
   scrollView: {
     marginBottom: 12,
   },
@@ -233,13 +251,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 8,
     elevation: 6,
-    marginHorizontal: 4,
   },
   headerText: {
     color: "#111111",
     fontSize: 14,
     fontWeight: "700",
-
     textAlign: "center",
     letterSpacing: 0.5,
   },
