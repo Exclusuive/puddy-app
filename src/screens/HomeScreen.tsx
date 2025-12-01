@@ -32,13 +32,11 @@ interface Pet {
 interface HomeScreenProps {
   onPetPress?: (pet: Pet) => void;
   onMissingReportPress?: () => void;
-  onScanPress?: (title: string) => void;
 }
 
 export default function HomeScreen({
   onPetPress,
   onMissingReportPress,
-  onScanPress,
 }: HomeScreenProps) {
   // 샘플 반려견 데이터
   const [pets] = useState<Pet[]>([
@@ -49,7 +47,7 @@ export default function HomeScreen({
       gender: "암컷",
       breed: "골든 리트리버",
       isNosePrintVerified: true,
-      status: "등록 완료",
+      status: "실종 중",
     },
     {
       id: "000-000-0000002",
@@ -69,10 +67,6 @@ export default function HomeScreen({
 
   const handlePetCardPress = (pet: Pet) => {
     onPetPress?.(pet);
-  };
-
-  const handleRegisterPress = () => {
-    onScanPress?.("강아지 등록");
   };
 
   const actions = [
@@ -169,11 +163,7 @@ export default function HomeScreen({
 
         {/* 반려견 신분증 카드 */}
         <View style={styles.cardContainer}>
-          <PetCard
-            pets={pets}
-            onCardPress={handlePetCardPress}
-            onRegisterPress={handleRegisterPress}
-          />
+          <PetCard pets={pets} onCardPress={handlePetCardPress} />
         </View>
 
         {/* 건강관리 섹션 헤더 */}

@@ -7,6 +7,7 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
+import { ReactNode } from "react";
 import { useState, useRef } from "react";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { StatusBar } from "expo-status-bar";
@@ -14,11 +15,13 @@ import { StatusBar } from "expo-status-bar";
 interface CameraScannerProps {
   onPhotoTaken: (uri: string) => void;
   guideText?: string;
+  topOverlay?: ReactNode;
 }
 
 export default function CameraScanner({
   onPhotoTaken,
   guideText = "강아지의 코를 원 안에 맞춰주세요",
+  topOverlay,
 }: CameraScannerProps) {
   const [permission, requestPermission] = useCameraPermissions();
   const [image, setImage] = useState<string | null>(null);
@@ -91,6 +94,23 @@ export default function CameraScanner({
             <Image source={{ uri: image }} style={styles.previewImage} />
             <View style={styles.previewOverlay}>
               <View style={styles.guideCircle} />
+              {/* 하단 버튼들 */}
+              <View style={styles.previewControls}>
+                <TouchableOpacity
+                  style={[styles.button, styles.confirmButton]}
+                  onPress={handleConfirm}
+                  disabled={isProcessing}
+                >
+                  <Text style={styles.confirmButtonText}>확인</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={handleRetake}
+                  disabled={isProcessing}
+                >
+                  <Text style={styles.cancelButtonText}>다시 촬영</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         ) : (
@@ -101,6 +121,11 @@ export default function CameraScanner({
             mode="picture"
           >
             <View style={styles.overlay}>
+              {/* 상단 오버레이 (탭 등) */}
+              {topOverlay && (
+                <View style={styles.topOverlay}>{topOverlay}</View>
+              )}
+
               <View style={styles.guideCircle} />
               <Text style={styles.guideText}>{guideText}</Text>
 
@@ -121,25 +146,6 @@ export default function CameraScanner({
           </CameraView>
         )}
       </View>
-
-      {image && (
-        <View style={styles.controls}>
-          <TouchableOpacity
-            style={[styles.button, styles.confirmButton]}
-            onPress={handleConfirm}
-            disabled={isProcessing}
-          >
-            <Text style={styles.confirmButtonText}>확인</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
-            onPress={handleRetake}
-            disabled={isProcessing}
-          >
-            <Text style={styles.cancelButtonText}>다시 촬영</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 }
@@ -197,6 +203,13 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.3)",
     position: "relative",
   },
+  topOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+  },
   guideCircle: {
     width: 250,
     height: 250,
@@ -242,13 +255,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  controls: {
+  previewControls: {
+    position: "absolute",
+    bottom: 40,
+    left: 20,
+    right: 20,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    paddingTop: 20,
     gap: 16,
   },
   button: {
